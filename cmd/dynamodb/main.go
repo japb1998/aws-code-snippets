@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/jap1998/aws-code-snippets/aws/ddb"
@@ -55,5 +56,23 @@ func main() {
 	fmt.Println("Paginated Results", pResults.Count)
 	for _, item := range pResults.Items {
 		fmt.Printf("Paginated: %+v\n", item)
+	}
+
+	// this should error
+	key, err := attributevalue.MarshalMap(map[string]string{
+		"primaryKey": "no-exist",
+		"sortKey":    "no-exist",
+	})
+
+	if err != nil {
+		fmt.Println("Error marshalling key", err)
+	}
+
+	_, err = dy.GetOne(ctx, &dynamodb.GetItemInput{
+		TableName: aws.String(os.Getenv("TABLE_NAME")),
+		Key:       key})
+
+	if err != nil {
+		fmt.Println("Error", err)
 	}
 }

@@ -19,7 +19,7 @@ func MustGetConfig(ctx context.Context) aws.Config {
 		})
 
 		example 2:
-		c, err = config.LoadDefaultConfig(ctx, config.WithSharedConfigProfile("personal"))
+		config.LoadDefaultConfig(ctx, config.WithSharedConfigProfile("personal"), config.WithRegion("us-east-1"))
 	*/
 	c, err := config.LoadDefaultConfig(ctx)
 

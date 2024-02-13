@@ -3,6 +3,7 @@ package ddb
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
 	"sync"
 
@@ -90,7 +91,7 @@ func (d *DynamoDB) GetOne(ctx context.Context, input *dynamodb.GetItemInput) (it
 		return nil, err
 	}
 
-	if output == nil || output.Item == nil {
+	if output.Item == nil {
 		return nil, ErrNotFound
 	}
 
@@ -137,7 +138,7 @@ func (d *DynamoDB) QueryWithPagination(ctx context.Context, input *PaginationOps
 			output, err := d.client.Query(ctx, &input.QueryInput)
 
 			if err != nil {
-				errChan <- err
+				errChan <- fmt.Errorf("error querying dynamo: %w", err)
 				return
 			}
 
@@ -172,7 +173,7 @@ func (d *DynamoDB) QueryWithPagination(ctx context.Context, input *PaginationOps
 		c, err := d.GetQueryCount(ctx, input.QueryInput)
 
 		if err != nil {
-			errChan <- err
+			errChan <- fmt.Errorf("error getting query count: %w", err)
 			return
 		}
 
